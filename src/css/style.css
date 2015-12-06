@@ -1,0 +1,16 @@
+body {
+  background-color: #fff;
+  height: 9000px;
+}
+body h1 {
+  color: yellow;
+  line-height: 90px;
+  background-color: #000;
+}
+body .Dig {
+  background-image: url(./images/test.png);background-position: -0px -0px;
+  background-size: 50px;
+}
+body .pig {
+  background-image: url(./images/test.png);background-position: -500px -0px;
+}
