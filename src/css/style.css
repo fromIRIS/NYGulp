@@ -3,7 +3,7 @@ body {
   height: 9000px;
 }
 body h1 {
-  color: yellow;
+  color: red;
   line-height: 90px;
   background-color: #000;
 }
@@ -13,4 +13,7 @@ body .Dig {
 }
 body .pig {
   background-image: url(./images/test.png);background-position: -500px -0px;
+}
+body .haha {
+  background-image: url(./images/test.png);background-position: -0px -500px;
 }
