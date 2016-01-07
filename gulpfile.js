@@ -15,6 +15,9 @@ var gulp       = require('gulp'),
     notify     = require('gulp-notify'),
     cache      = require('gulp-cache'),
     spriter    = require('gulp-spriter'),
+    imageResize= require('gulp-image-resize'),
+    minimist  = require('minimist'),
+    gulpif     = require('gulp-if'),
     config     = require('./config.json'),
     srcPath    = {
       HTML : "./src/*.html",
@@ -32,6 +35,7 @@ var gulp       = require('gulp'),
       IMG : "./dist/images"
     }
 
+var options = minimist(process.argv.slice(2));
 
 gulp.task("serve", ["less", "js-watch", "html"], function() {
     browserSync.init({
@@ -79,17 +83,35 @@ gulp.task('minifyjs',function(){
 });
 
 gulp.task('minifycss',function(){
-    return gulp.src(srcPath.CSS + '/*.css')
+    return gulp.src(srcPath.LESS)
+          .pipe(less())
+          .pipe(gulp.dest(srcPath.CSS))
           .pipe(minifycss())
           .pipe(gulp.dest(distPath.CSS));
 });
 
+// gulp.task('minifyspritePc',function(){
+//     return gulp.src(srcPath.LESS)
+//           .pipe(less())
+//           .pipe(spriter({
+//             sprite: "test.png",
+//             slice: srcPath.SPRITE,
+//             outpath: srcPath.IMG,
+//             imgPathFromCss: "../images"
+//           }))
+//           .pipe(gulp.dest(srcPath.CSS))
+//           .pipe(minifycss())
+//           .pipe(gulp.dest(distPath.CSS));
+// });
 gulp.task('minifysprite',function(){
-    return gulp.src(srcPath.CSS + '/*.css')
+    return gulp.src(srcPath.LESS)
+          .pipe(less())
           .pipe(spriter({
             sprite: "test.png",
             slice: srcPath.SPRITE,
-            outpath: srcPath.IMG
+            outpath: options.mb ? srcPath.SPRITE : srcPath.IMG,
+            imgPathFromCss: "../images",
+            isH5: options.mb
           }))
           .pipe(gulp.dest(srcPath.CSS))
           .pipe(minifycss())
@@ -98,7 +120,7 @@ gulp.task('minifysprite',function(){
 
 
 //压缩图片
-gulp.task('imagemin', function () {
+gulp.task('imagemin', ['scaleimg'], function () {
     return gulp.src(srcPath.IMG + '/*.{png,jpg,jpeg}')
         .pipe(cache(imagemin({
             progressive: true,
@@ -106,6 +128,16 @@ gulp.task('imagemin', function () {
             use: [pngquant()] //深度png压缩
         })))
         .pipe(gulp.dest(distPath.IMG));
+});
+
+// 缩小图片 
+gulp.task('scaleimg', function () {
+  return gulp.src(srcPath.SPRITE + '/test.png')
+    .pipe(gulpif(options.mb, imageResize({ 
+      width: '50%',
+      imageMagick: true
+    })))
+    .pipe(gulpif(options.mb, gulp.dest(srcPath.IMG)));
 });
 
 //压缩图片 - tinypng
@@ -125,12 +157,12 @@ gulp.task('buildfiles', function() {
 
 
 //项目完成提交任务
-gulp.task('buildspritePc', ['minifysprite'], function(){
+gulp.task('buildsprite', ['minifysprite'], function(){
   gulp.run('imagemin');
   gulp.run('minifyjs');
   gulp.run('buildfiles');
-  
 });
+
 
 //项目完成提交任务
 gulp.task('build', function(){
@@ -181,3 +213,4 @@ gulp.task('build', function(){
 //             remotePath: config.sftp.remotePath
 //         }));
 // });
+

@@ -1,0 +1,11 @@
+p {
+  background-image: url(../images/test.png);background-position: -0px -0px;
+  margin: 10px;
+  width: 400px;
+  height: 400px;
+}
+.div1 {
+  width: 400px;
+  height: 400px;
+  background-image: url(../images/test.png);background-position: -500px -0px;
+}
